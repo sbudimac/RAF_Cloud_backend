@@ -27,7 +27,13 @@ public class User {
             @AttributeOverride(name = "canCreateUsers", column = @Column(name = "create_users_perm")),
             @AttributeOverride(name = "canReadUsers", column = @Column(name = "read_users_perm")),
             @AttributeOverride(name = "canUpdateUsers", column = @Column(name = "update_users_perm")),
-            @AttributeOverride(name = "canDeleteUsers", column = @Column(name = "delete_users_perm"))
+            @AttributeOverride(name = "canDeleteUsers", column = @Column(name = "delete_users_perm")),
+            @AttributeOverride(name = "canSearchMachines", column = @Column(name = "can_search_machines")),
+            @AttributeOverride(name = "canStartMachines", column = @Column(name = "can_start_machines")),
+            @AttributeOverride(name = "canStopMachines", column = @Column(name = "can_stop_machines")),
+            @AttributeOverride(name = "canDestroyMachines", column = @Column(name = "can_destroy_machines")),
+            @AttributeOverride(name = "canRestartMachines", column = @Column(name = "can_restart_machines")),
+            @AttributeOverride(name = "canCreateMachines", column = @Column(name = "can_create_machines"))
     })
     private Permissions permissions;
 }

@@ -15,4 +15,10 @@ public class Permissions {
     private boolean canReadUsers;
     private boolean canUpdateUsers;
     private boolean canDeleteUsers;
+    private boolean canSearchMachines;
+    private boolean canStartMachines;
+    private boolean canStopMachines;
+    private boolean canDestroyMachines;
+    private boolean canRestartMachines;
+    private boolean canCreateMachines;
 }
