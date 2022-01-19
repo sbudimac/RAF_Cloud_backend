@@ -6,54 +6,48 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import sbudimac.domaci3.model.Machine;
 import sbudimac.domaci3.model.PermissionAuthority;
-import sbudimac.domaci3.model.User;
+import sbudimac.domaci3.services.MachineService;
 import sbudimac.domaci3.services.UserService;
 
 import java.util.Collection;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/users")
-public class UserRestController {
+@RequestMapping("/api/machines")
+public class MachineRestController {
     private final UserService userService;
+    private final MachineService machineService;
 
     @Autowired
-    public UserRestController(UserService userService) {
+    public MachineRestController(UserService userService, MachineService machineService) {
         this.userService = userService;
+        this.machineService = machineService;
     }
 
     @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAllUsers() {
-        if (collectPermissions().getPermissions().isCanReadUsers()) {
-            return ResponseEntity.ok(userService.findAll());
+    public ResponseEntity<?> getAllMachines() {
+        if (collectPermissions().getPermissions().isCanSearchMachines()) {
+            return ResponseEntity.ok(machineService.findAll());
         } else {
             return ResponseEntity.status(403).build();
         }
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createUser(@RequestBody User user) {
-        if (collectPermissions().getPermissions().isCanCreateUsers()) {
-            return ResponseEntity.ok(userService.save(user));
-        } else {
-            return ResponseEntity.status(403).build();
-        }
-    }
-
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateUser(@RequestBody User user) {
-        if (collectPermissions().getPermissions().isCanUpdateUsers()) {
-            return ResponseEntity.ok(userService.save(user));
+    public ResponseEntity<?> createMachine(@RequestBody Machine machine) {
+        if (collectPermissions().getPermissions().isCanCreateMachines()) {
+            return ResponseEntity.ok(machineService.create(machine));
         } else {
             return ResponseEntity.status(403).build();
         }
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        if (collectPermissions().getPermissions().isCanDeleteUsers()) {
-            userService.deleteById(id);
+    public ResponseEntity<?> destroyMachine(@PathVariable Long id) {
+        if (collectPermissions().getPermissions().isCanDestroyMachines()) {
+            machineService.deleteById(id);
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.status(403).build();
