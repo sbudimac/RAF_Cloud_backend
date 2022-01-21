@@ -23,6 +23,11 @@ public class UserRestController {
         this.userService = userService;
     }
 
+    @GetMapping(value = "/curr", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getCurrentUser() {
+        return ResponseEntity.ok(userService.current());
+    }
+
     @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAllUsers() {
         if (collectPermissions().getPermissions().isCanReadUsers()) {

@@ -27,18 +27,18 @@ public class MachineRestController {
     }
 
     @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAllMachines() {
+    public ResponseEntity<?> getAllMachines(@RequestBody Long userId) {
         if (collectPermissions().getPermissions().isCanSearchMachines()) {
-            return ResponseEntity.ok(machineService.findAll());
+            return ResponseEntity.ok(machineService.findForUser(userId));
         } else {
             return ResponseEntity.status(403).build();
         }
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createMachine(@RequestBody Machine machine) {
+    public ResponseEntity<?> createMachine(@RequestBody Machine machine, @RequestBody Long userId) {
         if (collectPermissions().getPermissions().isCanCreateMachines()) {
-            return ResponseEntity.ok(machineService.create(machine));
+            return ResponseEntity.ok(machineService.create(machine, userId));
         } else {
             return ResponseEntity.status(403).build();
         }

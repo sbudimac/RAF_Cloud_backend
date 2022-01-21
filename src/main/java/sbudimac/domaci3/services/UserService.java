@@ -1,7 +1,7 @@
 package sbudimac.domaci3.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,6 +32,15 @@ public class UserService implements UserDetailsService {
         this.permissionMapper = permissionMapper;
         this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
+    }
+
+    public UserDto current() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> u = this.userRepository.findByEmail(email);
+        if (u.isEmpty()) {
+            throw new UsernameNotFoundException("No logged in user found.");
+        }
+        return userMapper.userToUserDto(u.get());
     }
 
     public UserDto save(User user) {

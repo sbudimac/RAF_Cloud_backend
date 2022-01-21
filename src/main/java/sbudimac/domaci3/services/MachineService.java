@@ -16,12 +16,12 @@ public class MachineService {
         this.machineRespository = machineRespository;
     }
 
-    public Machine create(Machine machine) {
-        return this.machineRespository.save(machine);
+    public Machine create(Machine machine, Long userId) {
+        return this.machineRespository.createMachineForUser(machine.getName(), machine.getDate(), machine.isActive(), machine.getStatus(), userId);
     }
 
-    public List<Machine> findAll() {
-        return this.machineRespository.findAll();
+    public List<Machine> findForUser(Long userId) {
+        return this.machineRespository.getMachinesForUser(userId);
     }
 
     public void deleteById(Long id) {

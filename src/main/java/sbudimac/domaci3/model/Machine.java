@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.sql.Date;
 
 @Getter
 @Setter
@@ -15,10 +16,13 @@ public class Machine {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
+    private String name;
+    @Column(nullable = false)
+    private Date date;
+    @Column(nullable = false)
     private Status status;
     @Column(nullable = false)
     private boolean active;
-    @ManyToOne
-    //@JoinColumn(name = "id", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.EAGER)
     private User user;
 }
