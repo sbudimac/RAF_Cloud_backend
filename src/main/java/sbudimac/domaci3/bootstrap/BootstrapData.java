@@ -34,6 +34,9 @@ public class BootstrapData implements CommandLineRunner {
         user.getPermissions().setCanCreateUsers(true);
         user.getPermissions().setCanUpdateUsers(true);
         user.getPermissions().setCanDeleteUsers(true);
+        user.getPermissions().setCanCreateMachines(true);
+        user.getPermissions().setCanSearchMachines(true);
+        user.getPermissions().setCanDeleteUsers(true);
         userRepository.save(user);
         System.out.println("WOOOOO");
     }

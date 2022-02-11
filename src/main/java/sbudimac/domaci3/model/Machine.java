@@ -3,9 +3,11 @@ package sbudimac.domaci3.model;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.time.LocalDate;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -18,7 +20,8 @@ public class Machine {
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)
-    private Date date;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDate date;
     @Column(nullable = false)
     private Status status;
     @Column(nullable = false)

@@ -8,10 +8,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import sbudimac.domaci3.model.Machine;
 import sbudimac.domaci3.model.PermissionAuthority;
+import sbudimac.domaci3.model.Status;
 import sbudimac.domaci3.services.MachineService;
 import sbudimac.domaci3.services.UserService;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -26,8 +31,8 @@ public class MachineRestController {
         this.machineService = machineService;
     }
 
-    @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAllMachines(@RequestBody Long userId) {
+    @GetMapping(value = "/all/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getAllMachines(@PathVariable("userId") Long userId) {
         if (collectPermissions().getPermissions().isCanSearchMachines()) {
             return ResponseEntity.ok(machineService.findForUser(userId));
         } else {
@@ -35,10 +40,36 @@ public class MachineRestController {
         }
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createMachine(@RequestBody Machine machine, @RequestBody Long userId) {
+    @GetMapping(value = "/search/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> searchMachines(@PathVariable("userId") Long userId, @RequestParam(required = false) String name, @RequestParam(required = false) String status, @RequestParam(required = false) String dateFrom, @RequestParam(required = false) String dateTo) {
+        if (collectPermissions().getPermissions().isCanSearchMachines()) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate localFrom = null;
+            LocalDate localTo = null;
+            if (dateFrom != null) {
+                localFrom = LocalDate.parse(dateFrom, formatter);
+            }
+            if (dateTo != null) {
+                localTo = LocalDate.parse(dateTo, formatter);
+            }
+            if (status != null) {
+                String[] statusArray = status.split(",");
+                List<Status> statusList = new ArrayList<>();
+                for (String s : statusArray) {
+                    statusList.add(Status.valueOf(s));
+                }
+                return ResponseEntity.ok(machineService.searchMachines(name, statusList, localFrom, localTo, userId));
+            }
+            return ResponseEntity.ok(machineService.searchMachines(name, null, localFrom, localTo, userId));
+        } else {
+            return ResponseEntity.status(403).build();
+        }
+    }
+
+    @PostMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> createMachine(@RequestBody Machine machine, @PathVariable("id") Long id) {
         if (collectPermissions().getPermissions().isCanCreateMachines()) {
-            return ResponseEntity.ok(machineService.create(machine, userId));
+            return ResponseEntity.ok(machineService.create(machine, id));
         } else {
             return ResponseEntity.status(403).build();
         }
