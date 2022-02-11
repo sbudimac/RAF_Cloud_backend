@@ -1,5 +1,6 @@
 package sbudimac.domaci3.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -26,6 +27,10 @@ public class Machine {
     private Status status;
     @Column(nullable = false)
     private boolean active;
+    private boolean working;
     @ManyToOne(fetch = FetchType.EAGER)
     private User user;
+    @Version
+    @JsonIgnore
+    private Long version;
 }

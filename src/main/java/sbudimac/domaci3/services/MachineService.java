@@ -1,6 +1,7 @@
 package sbudimac.domaci3.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import sbudimac.domaci3.model.Machine;
 import sbudimac.domaci3.model.Status;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MachineService {
@@ -76,7 +78,109 @@ public class MachineService {
         return new ArrayList<>();
     }
 
+    @Async
+    public void startMachine(Long id) {
+        Optional<Machine> machine = machineRespository.findById(id);
+        if (machine.isPresent()) {
+            Machine m = machine.get();
+            if (m.getStatus() != Status.STOPPED) {
+                return;
+            }
+            m.setWorking(true);
+            machineRespository.save(m);
+            try {
+                Thread.sleep((long)(Math.random() * (15 -10) + 10) * 1000);
+                m = machineRespository.findById(id).get();
+                m.setStatus(Status.RUNNING);
+                m.setWorking(false);
+                machineRespository.save(m);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Async
+    public void stopMachine(Long id) {
+        Optional<Machine> machine = machineRespository.findById(id);
+        if (machine.isPresent()) {
+            Machine m = machine.get();
+            if (m.getStatus() != Status.RUNNING) {
+                return;
+            }
+            m.setWorking(true);
+            machineRespository.save(m);
+            try {
+                Thread.sleep((long)(Math.random() * (15 -10) + 10) * 1000);
+                m = machineRespository.findById(id).get();
+                m.setStatus(Status.STOPPED);
+                m.setWorking(false);
+                machineRespository.save(m);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Async
+    public void restartMachine(Long id) {
+        Optional<Machine> machine = machineRespository.findById(id);
+        if (machine.isPresent()) {
+            Machine m = machine.get();
+            if (m.getStatus() != Status.RUNNING) {
+                return;
+            }
+            m.setWorking(true);
+            try {
+                Thread.sleep((long)(Math.random() * (15 -10) + 10) * 1000);
+                m = machineRespository.findById(id).get();
+                m.setStatus(Status.STOPPED);
+                machineRespository.save(m);
+                Thread.sleep((long)(Math.random() * (15 -10) + 10) * 1000);
+                m = machineRespository.findById(id).get();
+                m.setStatus(Status.RUNNING);
+                m.setWorking(false);
+                machineRespository.save(m);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public void deleteById(Long id) {
         machineRespository.deleteById(id);
+    }
+
+    public boolean machineIsWorking(Long id) {
+        Optional<Machine> machine = machineRespository.findById(id);
+        if (machine.isPresent()) {
+            Machine m = machine.get();
+            if (m.isWorking()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean canStartMachine(Long id) {
+        Optional<Machine> machine = machineRespository.findById(id);
+        if (machine.isPresent()) {
+            Machine m = machine.get();
+            if (m.getStatus() == Status.STOPPED) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean canStopMachine(Long id) {
+        Optional<Machine> machine = machineRespository.findById(id);
+        if (machine.isPresent()) {
+            Machine m = machine.get();
+            if (m.getStatus() == Status.RUNNING) {
+                return true;
+            }
+        }
+        return false;
     }
 }

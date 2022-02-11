@@ -66,6 +66,54 @@ public class MachineRestController {
         }
     }
 
+    @PatchMapping(value = "/start/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> startMachine(@PathVariable("id") Long id) {
+        if (collectPermissions().getPermissions().isCanStartMachines()) {
+            if (machineService.machineIsWorking(id)) {
+                return ResponseEntity.status(409).body("Machine is currently working.");
+            }
+            if (machineService.canStartMachine(id)) {
+                machineService.startMachine(id);
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.status(409).body("Machine is in a wronge state.");
+        } else {
+            return ResponseEntity.status(403).build();
+        }
+    }
+
+    @PatchMapping(value = "/stop/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> stopMachine(@PathVariable("id") Long id) {
+        if (collectPermissions().getPermissions().isCanStopMachines()) {
+            if (machineService.machineIsWorking(id)) {
+                return ResponseEntity.status(409).body("Machine is currently working.");
+            }
+            if (machineService.canStopMachine(id)) {
+                machineService.stopMachine(id);
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.status(409).body("Machine is in a wrong state.");
+        } else {
+            return ResponseEntity.status(403).build();
+        }
+    }
+
+    @PatchMapping(value = "/restart/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> restartMachine(@PathVariable("id") Long id) {
+        if (collectPermissions().getPermissions().isCanRestartMachines()) {
+            if (machineService.machineIsWorking(id)) {
+                return ResponseEntity.status(409).body("Machine is currently working.");
+            }
+            if (machineService.canStopMachine(id)) {
+                machineService.restartMachine(id);
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.status(409).body("Machine is in a wrong state.");
+        } else {
+            return ResponseEntity.status(403).build();
+        }
+    }
+
     @PostMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createMachine(@RequestBody Machine machine, @PathVariable("id") Long id) {
         if (collectPermissions().getPermissions().isCanCreateMachines()) {
