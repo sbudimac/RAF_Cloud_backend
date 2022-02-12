@@ -12,6 +12,7 @@ import sbudimac.domaci3.repositories.MachineRespository;
 import sbudimac.domaci3.repositories.UserRepository;
 import sbudimac.domaci3.tasks.RestartMachineTask;
 import sbudimac.domaci3.tasks.StartMachineTask;
+import sbudimac.domaci3.tasks.StopMachineTask;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -178,7 +179,7 @@ public class MachineService {
         if (machine.isPresent()) {
             Machine m = machine.get();
             Date date = Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
-            taskScheduler.schedule(new StartMachineTask(m.getId(), id, machineRespository, errorMessageRepository), date);
+            taskScheduler.schedule(new StopMachineTask(m.getId(), id, machineRespository, errorMessageRepository), date);
         }
     }
 

@@ -119,7 +119,7 @@ public class MachineRestController {
     @PatchMapping(value = "/schedule/start/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> scheduleStart(@PathVariable ("id") Long id, @RequestBody String date) {
         if (collectPermissions().getPermissions().isCanStartMachines()) {
-            transformDate(date);
+            date = transformDate(date);
             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             LocalDateTime dateTime = LocalDateTime.parse(date, dateTimeFormatter);
             machineService.scheduleStart(id, dateTime);
@@ -132,7 +132,7 @@ public class MachineRestController {
     @PatchMapping(value = "/schedule/stop/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> scheduleStop(@PathVariable ("id") Long id, @RequestBody String date) {
         if (collectPermissions().getPermissions().isCanStopMachines()) {
-            transformDate(date);
+            date = transformDate(date);
             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             LocalDateTime dateTime = LocalDateTime.parse(date, dateTimeFormatter);
             machineService.scheduleStop(id, dateTime);
@@ -145,7 +145,7 @@ public class MachineRestController {
     @PatchMapping(value = "/schedule/restart/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> scheduleRestart(@PathVariable ("id") Long id, @RequestBody String date) {
         if (collectPermissions().getPermissions().isCanRestartMachines()) {
-            transformDate(date);
+            date = transformDate(date);
             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             LocalDateTime dateTime = LocalDateTime.parse(date, dateTimeFormatter);
             machineService.scheduleRestart(id, dateTime);
