@@ -44,6 +44,10 @@ public class MachineService {
         return this.machineRespository.save(machine);
     }
 
+    public Optional<Machine> findById(Long id) {
+        return this.machineRespository.findById(id);
+    }
+
     public List<Machine> findForUser(Long userId) {
         return this.machineRespository.findByUserIdAndActive(userId, true);
     }
@@ -158,6 +162,15 @@ public class MachineService {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void destroyMachine(Long id) {
+        Optional<Machine> machine = machineRespository.findById(id);
+        if (machine.isPresent()) {
+            Machine m = machine.get();
+            m.setActive(false);
+            machineRespository.save(m);
         }
     }
 

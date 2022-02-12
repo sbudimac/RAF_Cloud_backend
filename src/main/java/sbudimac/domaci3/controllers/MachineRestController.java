@@ -15,10 +15,7 @@ import sbudimac.domaci3.services.UserService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @CrossOrigin
 @RestController
@@ -167,8 +164,20 @@ public class MachineRestController {
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<?> destroyMachine(@PathVariable Long id) {
         if (collectPermissions().getPermissions().isCanDestroyMachines()) {
-            machineService.deleteById(id);
-            return ResponseEntity.noContent().build();
+            Optional<Machine> machine = machineService.findById(id);
+            if (machine.isPresent()) {
+                Machine m = machine.get();
+                if (m.getStatus() == Status.STOPPED) {
+                    if (m.isWorking()) {
+                        return ResponseEntity.status(409).body("Machine is currently working.");
+                    }
+                    machineService.destroyMachine(id);
+                    return ResponseEntity.noContent().build();
+                } else {
+                    return ResponseEntity.status(400).body("Machine is not stopped.");
+                }
+            }
+            return ResponseEntity.status(404).body("Machine not found.");
         } else {
             return ResponseEntity.status(403).build();
         }
