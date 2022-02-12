@@ -34,6 +34,10 @@ public class UserService implements UserDetailsService {
         this.userMapper = userMapper;
     }
 
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
+    }
+
     public UserDto current() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<User> u = this.userRepository.findByEmail(email);

@@ -13,10 +13,12 @@ import sbudimac.domaci3.services.MachineService;
 import sbudimac.domaci3.services.UserService;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin
 @RestController
@@ -114,6 +116,45 @@ public class MachineRestController {
         }
     }
 
+    @PatchMapping(value = "/schedule/start/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> scheduleStart(@PathVariable ("id") Long id, @RequestBody String date) {
+        if (collectPermissions().getPermissions().isCanStartMachines()) {
+            transformDate(date);
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            LocalDateTime dateTime = LocalDateTime.parse(date, dateTimeFormatter);
+            machineService.scheduleStart(id, dateTime);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(403).build();
+        }
+    }
+
+    @PatchMapping(value = "/schedule/stop/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> scheduleStop(@PathVariable ("id") Long id, @RequestBody String date) {
+        if (collectPermissions().getPermissions().isCanStopMachines()) {
+            transformDate(date);
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            LocalDateTime dateTime = LocalDateTime.parse(date, dateTimeFormatter);
+            machineService.scheduleStop(id, dateTime);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(403).build();
+        }
+    }
+
+    @PatchMapping(value = "/schedule/restart/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> scheduleRestart(@PathVariable ("id") Long id, @RequestBody String date) {
+        if (collectPermissions().getPermissions().isCanRestartMachines()) {
+            transformDate(date);
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            LocalDateTime dateTime = LocalDateTime.parse(date, dateTimeFormatter);
+            machineService.scheduleRestart(id, dateTime);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(403).build();
+        }
+    }
+
     @PostMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createMachine(@RequestBody Machine machine, @PathVariable("id") Long id) {
         if (collectPermissions().getPermissions().isCanCreateMachines()) {
@@ -137,5 +178,14 @@ public class MachineRestController {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Collection<? extends GrantedAuthority> permissions = this.userService.loadUserByUsername(email).getAuthorities();
         return (PermissionAuthority) permissions.toArray()[0];
+    }
+
+    private String transformDate(String date) {
+        date = date.replace("\"", "");
+        date = date.replace("date", "");
+        date = date.replace("{", "");
+        date = date.replace("}", "");
+        date = date.substring(1);
+        return date;
     }
 }

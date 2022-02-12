@@ -7,8 +7,8 @@ import sbudimac.domaci3.model.Machine;
 import sbudimac.domaci3.model.Status;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface MachineRespository extends JpaRepository<Machine, Long> {
     List<Machine> findByUserIdAndActive(Long userId, boolean active);
@@ -25,6 +25,7 @@ public interface MachineRespository extends JpaRepository<Machine, Long> {
     List<Machine> findByUserIdAndStatusInAndDateBeforeAndActive(Long userId, List<Status> status, LocalDate dateTo, boolean active);
     List<Machine> findByUserIdAndStatusInAndDateBetweenAndActive(Long userId, List<Status> status, LocalDate dateBefore, LocalDate dateTo, boolean active);
     List<Machine> findByUserIdAndNameContainingAndStatusInAndDateBetweenAndActive(Long userId, String name, List<Status> status, LocalDate dateFrom, LocalDate dateTo, boolean active);
+    Optional<Machine> findByIdAndUserIdAndActive(Long machineId, Long userId, boolean active);
 
 
 

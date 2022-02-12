@@ -29,6 +29,7 @@ public class Machine {
     private boolean active;
     private boolean working;
     @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
     private User user;
     @Version
     @JsonIgnore

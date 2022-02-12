@@ -1,28 +1,41 @@
 package sbudimac.domaci3.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
 import org.springframework.stereotype.Service;
 import sbudimac.domaci3.model.Machine;
 import sbudimac.domaci3.model.Status;
+import sbudimac.domaci3.repositories.ErrorMessageRepository;
 import sbudimac.domaci3.repositories.MachineRespository;
 import sbudimac.domaci3.repositories.UserRepository;
+import sbudimac.domaci3.tasks.RestartMachineTask;
+import sbudimac.domaci3.tasks.StartMachineTask;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Executors;
 
 @Service
 public class MachineService {
     private final UserRepository userRepository;
     private final MachineRespository machineRespository;
+    private final ErrorMessageRepository errorMessageRepository;
+
+    private final TaskScheduler taskScheduler;
 
     @Autowired
-    public MachineService(UserRepository userRepository, MachineRespository machineRespository) {
+    public MachineService(UserRepository userRepository, MachineRespository machineRespository, ErrorMessageRepository errorMessageRepository) {
         this.userRepository = userRepository;
         this.machineRespository = machineRespository;
+        this.errorMessageRepository = errorMessageRepository;
+        this.taskScheduler = new ConcurrentTaskScheduler(Executors.newScheduledThreadPool(20));
     }
 
     public Machine create(Machine machine, Long id) {
@@ -149,6 +162,33 @@ public class MachineService {
 
     public void deleteById(Long id) {
         machineRespository.deleteById(id);
+    }
+
+    public void scheduleStart(Long id, LocalDateTime dateTime) {
+        Optional<Machine> machine = machineRespository.findById(id);
+        if (machine.isPresent()) {
+            Machine m = machine.get();
+            Date date = Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
+            taskScheduler.schedule(new StartMachineTask(m.getId(), id, machineRespository, errorMessageRepository), date);
+        }
+    }
+
+    public void scheduleStop(Long id, LocalDateTime dateTime) {
+        Optional<Machine> machine = machineRespository.findById(id);
+        if (machine.isPresent()) {
+            Machine m = machine.get();
+            Date date = Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
+            taskScheduler.schedule(new StartMachineTask(m.getId(), id, machineRespository, errorMessageRepository), date);
+        }
+    }
+
+    public void scheduleRestart(Long id, LocalDateTime dateTime) {
+        Optional<Machine> machine = machineRespository.findById(id);
+        if (machine.isPresent()) {
+            Machine m = machine.get();
+            Date date = Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
+            taskScheduler.schedule(new RestartMachineTask(m.getId(), id, machineRespository, errorMessageRepository), date);
+        }
     }
 
     public boolean machineIsWorking(Long id) {
