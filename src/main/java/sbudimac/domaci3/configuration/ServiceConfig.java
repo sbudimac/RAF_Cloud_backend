@@ -2,6 +2,7 @@ package sbudimac.domaci3.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import sbudimac.domaci3.mappers.PermissionMapper;
@@ -10,6 +11,7 @@ import sbudimac.domaci3.repositories.UserRepository;
 import sbudimac.domaci3.services.UserService;
 
 @Configuration
+@EnableAsync
 public class ServiceConfig {
 
     @Bean
